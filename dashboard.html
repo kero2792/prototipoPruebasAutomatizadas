@@ -1,0 +1,207 @@
+<!DOCTYPE html>
+<html lang="es">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Libros - Dashboard</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.0/font/bootstrap-icons.css" rel="stylesheet">
+    <link href="https://cdn.jsdelivr.net/npm/sweetalert2@11.12.4/dist/sweetalert2.min.css" rel="stylesheet">
+    <style>
+        .loading {
+            display: none;
+        }
+
+        .error-message {
+            color: #dc3545;
+            font-size: 0.875em;
+            margin-top: 0.25rem;
+        }
+
+        .table-responsive {
+            border-radius: 0.375rem;
+            box-shadow: 0 0.125rem 0.25rem rgba(0, 0, 0, 0.075);
+        }
+
+        .modal-header {
+            background-color: #f8f9fa;
+            border-bottom: 1px solid #dee2e6;
+        }
+
+        .btn-success {
+            background-color: #198754;
+            border-color: #198754;
+        }
+
+        .btn-sm {
+            padding: 0.25rem 0.5rem;
+            font-size: 0.875rem;
+        }
+
+        .action-buttons {
+            white-space: nowrap;
+        }
+
+        /* Estilos personalizados para SweetAlert */
+        .swal-eliminar-libro {
+            font-family: inherit;
+        }
+
+        .btn-confirmar-eliminar {
+            padding: 0.5rem 1rem !important;
+        }
+
+        .btn-cancelar-eliminar {
+            padding: 0.5rem 1rem !important;
+        }
+
+        .swal-loading .swal2-loader {
+            border-color: #198754 transparent #198754 transparent;
+        }
+
+        .swal-exito-eliminar .swal2-success-circular-line-left,
+        .swal-exito-eliminar .swal2-success-circular-line-right {
+            background-color: #198754 !important;
+        }
+    </style>
+</head>
+
+<body>
+    <div class="container mt-5">
+        <div class="d-flex justify-content-between align-items-center mb-4">
+            <h2 class="text-primary">Gestión de Libros</h2>
+            <a href="index.html" class="btn btn-outline-secondary">Cerrar Sesión</a>
+        </div>
+
+        <div class="d-flex justify-content-between align-items-center mb-3">
+            <button class="btn btn-success" data-bs-toggle="modal" data-bs-target="#modalLibro">
+                <i class="bi bi-plus-circle"></i> Añadir Libro
+            </button>
+            <button class="btn btn-outline-primary" onclick="cargarLibros()">
+                <i class="bi bi-arrow-clockwise"></i> Actualizar
+            </button>
+        </div>
+
+        <div class="loading text-center" id="loadingSpinner">
+            <div class="spinner-border text-primary" role="status">
+                <span class="visually-hidden">Cargando...</span>
+            </div>
+            <p class="mt-2">Cargando libros...</p>
+        </div>
+
+        <div class="table-responsive">
+            <table class="table table-striped table-hover">
+                <thead class="table-dark">
+                    <tr>
+                        <th>ID</th>
+                        <th>Título</th>
+                        <th>Autor</th>
+                        <th>Editorial</th>
+                        <th>Año</th>
+                        <th>ISBN</th>
+                        <th>Precio</th>
+                        <th>Stock</th>
+                        <th>Estado</th>
+                        <th>Acciones</th>
+                    </tr>
+                </thead>
+                <tbody id="libros-tbody">
+                </tbody>
+            </table>
+        </div>
+
+        <div class="alert alert-info d-none" id="noLibrosMessage">
+            <i class="bi bi-info-circle"></i> No hay libros registrados. ¡Añade el primero!
+        </div>
+    </div>
+
+    <!-- Modal para Añadir/Editar Libro -->
+    <div class="modal fade" id="modalLibro" tabindex="-1" aria-labelledby="modalLibroLabel" aria-hidden="true">
+        <div class="modal-dialog modal-lg">
+            <form class="modal-content" id="formLibro">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="modalLibroLabel">
+                        <i class="bi bi-book"></i> <span id="modalTitulo">Añadir Nuevo Libro</span>
+                    </h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Cerrar"></button>
+                </div>
+                <div class="modal-body">
+                    <input type="hidden" id="libroId" value="">
+                    <div class="row">
+                        <div class="col-md-6">
+                            <div class="mb-3">
+                                <label for="titulo" class="form-label">Título <span class="text-danger">*</span></label>
+                                <input type="text" class="form-control" id="titulo" required maxlength="200">
+                                <div class="error-message" id="tituloError"></div>
+                            </div>
+                        </div>
+                        <div class="col-md-6">
+                            <div class="mb-3">
+                                <label for="autor" class="form-label">Autor <span class="text-danger">*</span></label>
+                                <input type="text" class="form-control" id="autor" required maxlength="150">
+                                <div class="error-message" id="autorError"></div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="row">
+                        <div class="col-md-6">
+                            <div class="mb-3">
+                                <label for="editorial" class="form-label">Editorial</label>
+                                <input type="text" class="form-control" id="editorial" maxlength="150">
+                            </div>
+                        </div>
+                        <div class="col-md-6">
+                            <div class="mb-3">
+                                <label for="anio_publicacion" class="form-label">Año de Publicación</label>
+                                <input type="number" class="form-control" id="anio_publicacion" min="1000" max="2025">
+                                <div class="error-message" id="anioError"></div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="row">
+                        <div class="col-md-6">
+                            <div class="mb-3">
+                                <label for="isbn" class="form-label">ISBN</label>
+                                <input type="text" class="form-control" id="isbn" maxlength="20"
+                                    placeholder="978-84-376-0494-7">
+                            </div>
+                        </div>
+                        <div class="col-md-6">
+                            <div class="mb-3">
+                                <label for="precio" class="form-label">Precio ($)</label>
+                                <input type="number" step="0.01" class="form-control" id="precio" min="0" max="9999.99">
+                                <div class="error-message" id="precioError"></div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="row">
+                        <div class="col-md-6">
+                            <div class="mb-3">
+                                <label for="stock" class="form-label">Stock</label>
+                                <input type="number" class="form-control" id="stock" min="0" max="9999" value="0">
+                                <div class="error-message" id="stockError"></div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
+                    <button type="submit" class="btn btn-success" id="btnGuardar">
+                        <span class="spinner-border spinner-border-sm d-none" id="spinnerGuardar"></span>
+                        <span id="btnTexto">Guardar Libro</span>
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11.12.4/dist/sweetalert2.all.min.js"></script>
+    <script src="./js/dashboard.js"></script>
+</body>
+
+</html>

@@ -1,0 +1,24 @@
+{
+  "name": "p3tarea3",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/kero2792/p3Tarea3.git"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/kero2792/p3Tarea3/issues"
+  },
+  "homepage": "https://github.com/kero2792/p3Tarea3#readme",
+  "dependencies": {
+    "express": "^5.1.0",
+    "tedious": "^18.6.1"
+  }
+}
