@@ -1,4 +1,4 @@
-# Tarea de manejo de versiones Git
+# Codigo de prueba para Selenium - CRUD
 
 Enmanuel Guerrero Santana (2024-0275),
 
